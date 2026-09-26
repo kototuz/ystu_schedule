@@ -69,7 +69,14 @@ class _WeekScheduleState extends State<WeekSchedule> {
           weekBeginDate.add(Duration(days: selectedWeekday - 1)),
         );
         if (day == null) {
-          body = const Center(child: Text('Нет расписания на этот день'));
+          body = Center(
+            child: Text(
+              'Нет расписания на этот день',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withAlpha(80),
+              ),
+            ),
+          );
         } else {
           var lastLessonNum = 1;
           day.lessons.forEach((l) {
@@ -80,12 +87,29 @@ class _WeekScheduleState extends State<WeekSchedule> {
             children: [
               Expanded(
                 child: Container(
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withAlpha(50),
+                    ),
+                  ),
                   padding: const EdgeInsets.symmetric(
                     vertical: 20,
                     horizontal: 10,
                   ),
-                  color: Theme.of(context).colorScheme.secondary,
-                  child: const Text('Окно'),
+                  child: Center(
+                    child: Text(
+                      'Окно',
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withAlpha(80),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -97,12 +121,155 @@ class _WeekScheduleState extends State<WeekSchedule> {
               children: [
                 Expanded(
                   child: Container(
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                      boxShadow: const [
+                        const BoxShadow(
+                          color: Colors.black12,
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
                     padding: const EdgeInsets.symmetric(
-                      vertical: 20,
+                      vertical: 10,
                       horizontal: 10,
                     ),
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                    child: Text(lesson.lessonName),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 60,
+                          padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '${lesson.startAt.hour}:${lesson.startAt.minute.toString().padLeft(2, '0')}',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '${lesson.endAt.hour}:${lesson.endAt.minute.toString().padLeft(2, '0')}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withAlpha(90),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        lesson.lessonName,
+                                        style: const TextStyle(fontSize: 13),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                Row(
+                                  children: [
+                                    Text(
+                                      lesson.type.toString(),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface.withAlpha(130),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const Spacer(),
+
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.fromLTRB(
+                                        0,
+                                        0,
+                                        10,
+                                        0,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.location_on,
+                                            size: 15,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withAlpha(130),
+                                          ),
+                                          Text(
+                                            lesson.auditoryName,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface
+                                                  .withAlpha(130),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    Icon(
+                                      Icons.person,
+                                      size: 15,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withAlpha(130),
+                                    ),
+
+                                    Text(
+                                      lesson.teacherName,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface.withAlpha(130),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -110,8 +277,8 @@ class _WeekScheduleState extends State<WeekSchedule> {
           }
 
           body = Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-            child: Column(spacing: 5, children: lessonView),
+            padding: const EdgeInsets.all(10),
+            child: Column(spacing: 7, children: lessonView),
           );
         }
       }
@@ -122,16 +289,18 @@ class _WeekScheduleState extends State<WeekSchedule> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.inversePrimary,
+              color: Theme.of(context).colorScheme.primary,
             ),
             padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
             child: Column(
+              spacing: 5,
               children: [
                 Text(
                   MONTH_NAMES[now.month - 1],
                   style: TextStyle(
                     fontSize: 16,
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 Row(
@@ -145,8 +314,8 @@ class _WeekScheduleState extends State<WeekSchedule> {
                             padding: const EdgeInsets.all(10.0),
                             shape: const RoundedRectangleBorder(),
                             backgroundColor: i == selectedWeekday
-                                ? Theme.of(context).cardColor
-                                : Theme.of(context).colorScheme.inversePrimary,
+                                ? Theme.of(context).colorScheme.surface
+                                : Theme.of(context).colorScheme.primary,
                           ),
                           onPressed: () => setState(() {
                             selectedWeekday = i;
@@ -157,7 +326,13 @@ class _WeekScheduleState extends State<WeekSchedule> {
                                   ? Border(
                                       top: BorderSide(
                                         width: 1.5,
-                                        color: Theme.of(context).primaryColor,
+                                        color: i == selectedWeekday
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface
+                                            : Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimary,
                                       ),
                                     )
                                   : null,
@@ -165,12 +340,32 @@ class _WeekScheduleState extends State<WeekSchedule> {
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Text(WEEK_NAMES[i]),
+                                Text(
+                                  WEEK_NAMES[i],
+                                  style: TextStyle(
+                                    color: i == selectedWeekday
+                                        ? Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimary,
+                                  ),
+                                ),
                                 Text(
                                   weekBeginDate
                                       .add(Duration(days: i))
                                       .day
                                       .toString(),
+                                  style: TextStyle(
+                                    color: i == selectedWeekday
+                                        ? Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimary,
+                                  ),
                                 ),
                               ],
                             ),
@@ -183,7 +378,12 @@ class _WeekScheduleState extends State<WeekSchedule> {
             ),
           ),
 
-          Expanded(child: body),
+          Expanded(
+            child: ColoredBox(
+              color: Theme.of(context).colorScheme.surface,
+              child: body,
+            ),
+          ),
         ],
       ),
     );

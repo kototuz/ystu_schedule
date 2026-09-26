@@ -5,6 +5,40 @@ class WeekDay {
   const WeekDay(this.type, this.date, this.weekNumber);
 }
 
+class LessonType {
+  static final LESSON_TYPE_NAMES = [
+    (0     ,  '???'),
+    (1 << 1,  'Лекция'),
+    (1 << 2,  'Практика'),
+    (1 << 3,  'Лабораторная'),
+    (1 << 4,  'Курсовая'),
+    (1 << 5,  'Консультация'),
+    (1 << 6,  'Зачёт'),
+    (1 << 7,  'Диф. зачёт'),
+    (1 << 8,  'Экзамен'),
+    (1 << 9,  'Библиотека'),
+    (1 << 10, 'НИР'),
+    (1 << 11, 'Орг. собрание'),
+    (1 << 12, 'Другое'),
+    (1 << 13, 'Практика'),
+    (1 << 14, 'Событие'),
+    (1 << 15, 'ВУЦ'),
+    (1 << 16, 'Физ. культура'),
+    (1 << 17, 'Факультатив'),
+    (1 << 18, 'Внешнее занятие'),
+    (1 << 20, 'Тензор'),
+    (1 << 21, 'Школа 21'),
+  ];
+
+  final int flags;
+  const LessonType(this.flags);
+
+  @override
+  String toString() {
+    return LESSON_TYPE_NAMES.firstWhere((t) => t.$1 == flags).$2;
+  }
+}
+
 class Lesson {
   final int number;
   final DateTime startAt;
@@ -12,7 +46,7 @@ class Lesson {
   final int parity;
   final bool isDistant;
   final String lessonName;
-  final int type;
+  final LessonType type;
   final bool isStream;
   final int duration;
   final bool isDivision;
@@ -126,15 +160,15 @@ class GroupSchedule {
                                 DateTime.parse(endAt),
                                 lesson['parity'] ?? 0,
                                 lesson['isDistant'] ?? false,
-                                lesson['lessonName'] ?? 'N/A',
-                                type,
+                                lesson['lessonName'] ?? lesson['subInfo'] ?? '???',
+                                LessonType(type),
                                 isStream,
                                 lesson['duration'] ?? 0,
                                 isDivision,
                                 lesson['isShort'] ?? false,
                                 lesson['isLecture'] ?? false,
-                                lesson['auditoryName'] ?? 'N/A',
-                                lesson['teacherName'] ?? 'N/A',
+                                lesson['auditoryName'] ?? '???',
+                                lesson['teacherName'] ?? '???',
                               ),
                             _ => throw const FormatException(
                               'Failed to parse Lesson',
