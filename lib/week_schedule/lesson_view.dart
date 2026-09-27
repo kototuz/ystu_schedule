@@ -24,7 +24,7 @@ class LessonView extends StatelessWidget {
               if (model.week != null) {
                 final day = model.week!.findDay(
                   model.weekBeginDate.add(
-                    Duration(days: model.selectedWeekday - 1),
+                    Duration(days: model.selectedWeekday),
                   ),
                 );
                 if (day == null) {

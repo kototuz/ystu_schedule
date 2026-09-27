@@ -7,16 +7,16 @@ class WeekDay {
 
 class LessonType {
   static final LESSON_TYPE_NAMES = [
-    (0     ,  '???'),
-    (1 << 1,  'Лекция'),
-    (1 << 2,  'Практика'),
-    (1 << 3,  'Лабораторная'),
-    (1 << 4,  'Курсовая'),
-    (1 << 5,  'Консультация'),
-    (1 << 6,  'Зачёт'),
-    (1 << 7,  'Диф. зачёт'),
-    (1 << 8,  'Экзамен'),
-    (1 << 9,  'Библиотека'),
+    (0, '???'),
+    (1 << 1, 'Лекция'),
+    (1 << 2, 'Практика'),
+    (1 << 3, 'Лабораторная'),
+    (1 << 4, 'Курсовая'),
+    (1 << 5, 'Консультация'),
+    (1 << 6, 'Зачёт'),
+    (1 << 7, 'Диф. зачёт'),
+    (1 << 8, 'Экзамен'),
+    (1 << 9, 'Библиотека'),
     (1 << 10, 'НИР'),
     (1 << 11, 'Орг. собрание'),
     (1 << 12, 'Другое'),
@@ -138,7 +138,11 @@ class GroupSchedule {
                             'date': final String date,
                             'weekNumber': final int weekNumber,
                           } =>
-                            WeekDay(type, DateTime.parse(date), weekNumber),
+                            WeekDay(
+                              type,
+                              DateTime.parse(date).toLocal(),
+                              weekNumber,
+                            ),
 
                           _ => throw const FormatException(
                             'Failed to parse WeekDay',
@@ -156,11 +160,13 @@ class GroupSchedule {
                             } =>
                               Lesson(
                                 lesson['number'] ?? e.key + 1,
-                                DateTime.parse(startAt),
-                                DateTime.parse(endAt),
+                                DateTime.parse(startAt).toLocal(),
+                                DateTime.parse(endAt).toLocal(),
                                 lesson['parity'] ?? 0,
                                 lesson['isDistant'] ?? false,
-                                lesson['lessonName'] ?? lesson['subInfo'] ?? '???',
+                                lesson['lessonName'] ??
+                                    lesson['subInfo'] ??
+                                    '???',
                                 LessonType(type),
                                 isStream,
                                 lesson['duration'] ?? 0,
