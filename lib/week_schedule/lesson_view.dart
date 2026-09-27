@@ -110,14 +110,16 @@ class LessonCard extends StatelessWidget {
             height: 80,
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainerHigh,
-              boxShadow: const [
-                const BoxShadow(
-                  color: Colors.black12,
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
+              boxShadow: Theme.of(context).brightness == Brightness.light
+                  ? const [
+                      const BoxShadow(
+                        color: Colors.black12,
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
             ),
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             child: Row(
