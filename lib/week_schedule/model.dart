@@ -7,15 +7,16 @@ import 'package:ystu_schedule/types/group_schedule.dart';
 class WeekScheduleModel with ChangeNotifier {
   late DateTime now;
   late DateTime weekBeginDate;
-  late int selectedWeekday;
+  late DateTime selectedDayDate;
 
   GroupSchedule? schedule;
   Week? week;
+  Day? selectedDay;
 
   WeekScheduleModel() {
     now = DateTime.now();
     weekBeginDate = now.subtract(Duration(days: now.weekday - 1));
-    selectedWeekday = now.weekday - 1;
+    selectedDayDate = now;
 
     http.get(Uri.parse('http://192.168.1.51:8000/ЦИС-15')).then((resp) {
       if (resp.statusCode == 200) {
@@ -24,6 +25,7 @@ class WeekScheduleModel with ChangeNotifier {
         );
 
         week = schedule!.findWeekByFirstDay(weekBeginDate);
+        selectedDay = week?.findDay(now);
         notifyListeners();
       } else {
         throw Exception('Failed to load schedule');
@@ -31,8 +33,15 @@ class WeekScheduleModel with ChangeNotifier {
     });
   }
 
-  void setSelectedWeekday(int day) {
-    selectedWeekday = day;
+  void setSelectedDay(DateTime day) {
+    selectedDayDate = day;
+    selectedDay = week?.findDay(day);
+    notifyListeners();
+  }
+
+  void setWeek(DateTime weekFirstDayDate) {
+    weekBeginDate = weekFirstDayDate;
+    week = schedule?.findWeekByFirstDay(weekBeginDate);
     notifyListeners();
   }
 }

@@ -21,69 +21,62 @@ class LessonView extends StatelessWidget {
           builder: (context, child) {
             Widget result = const Center(child: CircularProgressIndicator());
             if (model.schedule != null) {
-              if (model.week != null) {
-                final day = model.week!.findDay(
-                  model.weekBeginDate.add(
-                    Duration(days: model.selectedWeekday),
+              if (model.selectedDay == null) {
+                result = Center(
+                  child: Text(
+                    'Нет расписания на этот день',
+                    style: TextStyle(
+                      color: colorScheme.onSurface.withAlpha(80),
+                    ),
                   ),
                 );
-                if (day == null) {
-                  result = Center(
-                    child: Text(
-                      'Нет расписания на этот день',
-                      style: TextStyle(
-                        color: colorScheme.onSurface.withAlpha(80),
-                      ),
-                    ),
-                  );
-                } else {
-                  var lastLessonNum = 1;
-                  day.lessons.forEach((l) {
-                    lastLessonNum = max(lastLessonNum, l.number);
-                  });
+              } else {
+                var lastLessonNum = 1;
+                model.selectedDay!.lessons.forEach((l) {
+                  lastLessonNum = max(lastLessonNum, l.number);
+                });
 
-                  final placeholder = Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            border: Border.all(
-                              color: colorScheme.onSurface.withAlpha(50),
-                            ),
+                final placeholder = Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface,
+                          border: Border.all(
+                            color: colorScheme.onSurface.withAlpha(50),
                           ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 20,
-                            horizontal: 10,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Окно',
-                              style: TextStyle(
-                                color: colorScheme.onSurface.withAlpha(80),
-                              ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 20,
+                          horizontal: 10,
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Окно',
+                            style: TextStyle(
+                              color: colorScheme.onSurface.withAlpha(80),
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  );
+                    ),
+                  ],
+                );
 
-                  final List<Widget> lessonView = List.filled(
-                    lastLessonNum,
-                    placeholder,
-                  );
+                final List<Widget> lessonView = List.filled(
+                  lastLessonNum,
+                  placeholder,
+                );
 
-                  for (final lesson in day.lessons) {
-                    lessonView[lesson.number - 1] = LessonCard(lesson);
-                  }
-
-                  result = Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(spacing: 7, children: lessonView),
-                  );
+                for (final lesson in model.selectedDay!.lessons) {
+                  lessonView[lesson.number - 1] = LessonCard(lesson);
                 }
+
+                result = Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(spacing: 7, children: lessonView),
+                );
               }
             }
 
