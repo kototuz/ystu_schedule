@@ -2,12 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ystu_schedule/types/group_list.dart';
 import 'package:ystu_schedule/types/group_schedule.dart';
 
 class WeekScheduleModel with ChangeNotifier {
   late DateTime now;
   late DateTime weekBeginDate;
   late DateTime selectedDayDate;
+
+  GroupList? groupList;
+  int selectedGroupIdx = 0;
 
   GroupSchedule? schedule;
   Week? week;
@@ -29,6 +33,20 @@ class WeekScheduleModel with ChangeNotifier {
         notifyListeners();
       } else {
         throw Exception('Failed to load schedule');
+      }
+    });
+  }
+
+  void updateGroupList() {
+    http.get(Uri.parse('http://192.168.1.51:8000/actual_groups')).then((resp) {
+      if (resp.statusCode == 200) {
+        groupList = GroupList.fromJson(
+          jsonDecode(resp.body) as Map<String, dynamic>,
+        );
+
+        notifyListeners();
+      } else {
+        throw Exception('Failed to load group list');
       }
     });
   }

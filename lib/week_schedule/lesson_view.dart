@@ -31,51 +31,57 @@ class LessonView extends StatelessWidget {
                   ),
                 );
               } else {
-                var lastLessonNum = 1;
-                model.selectedDay!.lessons.forEach((l) {
-                  lastLessonNum = max(lastLessonNum, l.number);
-                });
+                // var lastLessonNum = 1;
+                // model.selectedDay!.lessons.forEach((l) {
+                //   lastLessonNum = max(lastLessonNum, l.number);
+                // });
 
-                final placeholder = Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          border: Border.all(
-                            color: colorScheme.onSurface.withAlpha(50),
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 20,
-                          horizontal: 10,
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Окно',
-                            style: TextStyle(
-                              color: colorScheme.onSurface.withAlpha(80),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
+                // final placeholder = Row(
+                //   children: [
+                //     Expanded(
+                //       child: Container(
+                //         height: 80,
+                //         decoration: BoxDecoration(
+                //           color: colorScheme.surface,
+                //           border: Border.all(
+                //             color: colorScheme.onSurface.withAlpha(50),
+                //           ),
+                //         ),
+                //         padding: const EdgeInsets.symmetric(
+                //           vertical: 20,
+                //           horizontal: 10,
+                //         ),
+                //         child: Center(
+                //           child: Text(
+                //             'Окно',
+                //             style: TextStyle(
+                //               color: colorScheme.onSurface.withAlpha(80),
+                //             ),
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // );
 
-                final List<Widget> lessonView = List.filled(
-                  lastLessonNum,
-                  placeholder,
-                );
+                // final List<Widget> lessonView = List.filled(
+                //   lastLessonNum,
+                //   placeholder,
+                // );
 
-                for (final lesson in model.selectedDay!.lessons) {
-                  lessonView[lesson.number - 1] = LessonCard(lesson);
-                }
+                // for (final lesson in model.selectedDay!.lessons) {
+                //   lessonView[lesson.number - 1] = LessonCard(lesson);
+                // }
 
                 result = Container(
                   padding: const EdgeInsets.all(10),
-                  child: Column(spacing: 7, children: lessonView),
+                  child: Column(
+                    spacing: 7,
+                    children: [
+                      for (final lesson in model.selectedDay!.lessons)
+                        LessonCard(lesson),
+                    ],
+                  ),
                 );
               }
             }

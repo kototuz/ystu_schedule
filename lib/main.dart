@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ystu_schedule/settings/page.dart';
+import 'package:ystu_schedule/week_schedule/model.dart';
 import 'package:ystu_schedule/week_schedule/page.dart';
 
 void main() {
@@ -8,7 +10,6 @@ void main() {
 class App extends StatelessWidget {
   const App({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     const seedColor = Colors.red;
@@ -40,7 +41,46 @@ class App extends StatelessWidget {
 
       themeMode: ThemeMode.dark,
 
-      home: WeekSchedulePage(),
+      home: const Home(),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  late List<Widget> pages;
+  late WeekScheduleModel model;
+
+  var selectedPageIdx = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    model = WeekScheduleModel();
+    pages = [WeekSchedulePage(model), SettingsPage(model)];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: pages[selectedPageIdx],
+      bottomNavigationBar: BottomNavigationBar(
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
+        ],
+        currentIndex: selectedPageIdx,
+        onTap: (index) => setState(() => selectedPageIdx = index),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      ),
     );
   }
 }

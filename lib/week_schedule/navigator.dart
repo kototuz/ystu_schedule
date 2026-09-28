@@ -17,6 +17,8 @@ class _WeekScheduleNavigatorState extends State<WeekScheduleNavigator>
 
   var panStartX = 0.0;
   var currX = 0.0;
+  
+  // 3 weeks to create effect of infinite scrolling
   late List<DateTime> weekBuffer;
 
   late AnimationController controller;

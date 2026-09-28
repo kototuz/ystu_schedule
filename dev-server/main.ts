@@ -11,6 +11,11 @@ Deno.serve(async (req) => {
     return new Response(Deno.openSync("cis-15.json").readable, {
       headers: { "Content-Type": "application/json" },
     });
+  } else if (url.pathname == "/actual_groups") {
+    await delay(2000);
+    return new Response(Deno.openSync("actual_groups.json").readable, {
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   return new Response("", { status: 404 });
