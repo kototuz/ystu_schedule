@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ystu_schedule/resource_state.dart' as rs;
 import 'package:ystu_schedule/types/group_list.dart';
 import 'package:ystu_schedule/types/group_schedule.dart';
 
@@ -10,10 +11,10 @@ class ScheduleModel with ChangeNotifier {
   late DateTime weekBeginDate;
   late DateTime selectedDayDate;
 
-  GroupList? groupList;
-  int selectedGroupIdx = 0;
+  rs.State<GroupList>? groupList;
+  var selectedGroupIdx = 0;
 
-  GroupSchedule? schedule;
+  rs.State<GroupSchedule>? schedule;
   Week? week;
   Day? selectedDay;
 
@@ -21,34 +22,43 @@ class ScheduleModel with ChangeNotifier {
     now = DateTime.now();
     weekBeginDate = now.subtract(Duration(days: now.weekday - 1));
     selectedDayDate = now;
-
-    http.get(Uri.parse('http://192.168.1.51:8000/ЦИС-15')).then((resp) {
-      if (resp.statusCode == 200) {
-        schedule = GroupSchedule.fromJson(
-          jsonDecode(resp.body) as Map<String, dynamic>,
-        );
-
-        week = schedule!.findWeekByFirstDay(weekBeginDate);
-        selectedDay = week?.findDay(now);
-        notifyListeners();
-      } else {
-        throw Exception('Failed to load schedule');
-      }
-    });
   }
 
-  void updateGroupList() {
-    http.get(Uri.parse('http://192.168.1.51:8000/actual_groups')).then((resp) {
-      if (resp.statusCode == 200) {
-        groupList = GroupList.fromJson(
-          jsonDecode(resp.body) as Map<String, dynamic>,
+  static Future<rs.State<GroupSchedule>> downloadGroupSchedule(String grpName) {
+    return http
+        .get(Uri.parse('http://192.168.1.51:8000/${grpName}'))
+        .then(
+          (resp) => resp.statusCode == 200
+              ? rs.Ok(
+                  GroupSchedule.fromJson(
+                    jsonDecode(resp.body) as Map<String, dynamic>,
+                  ),
+                )
+              : rs.Error('Не удалось загрузить расписание'),
         );
+  }
 
-        notifyListeners();
-      } else {
-        throw Exception('Failed to load group list');
-      }
-    });
+  static Future<rs.State<GroupList>> downloadGroupList() {
+    return http
+        .get(Uri.parse('http://192.168.1.51:8000/actual_groups'))
+        .then(
+          (resp) => resp.statusCode == 200
+              ? rs.Ok(
+                  GroupList.fromJson(
+                    jsonDecode(resp.body) as Map<String, dynamic>,
+                  ),
+                )
+              : rs.Error('Не удалось загрузить список групп'),
+        );
+  }
+
+  void setSchedule(rs.State<GroupSchedule>? newSchedule) {
+    if (newSchedule case rs.Ok(value: final it)) {
+      week = it.findWeekByFirstDay(weekBeginDate);
+      selectedDay = week?.findDay(selectedDayDate);
+      schedule = newSchedule;
+      notifyListeners();
+    }
   }
 
   void setSelectedDay(DateTime day) {
@@ -59,7 +69,9 @@ class ScheduleModel with ChangeNotifier {
 
   void setWeek(DateTime weekFirstDayDate) {
     weekBeginDate = weekFirstDayDate;
-    week = schedule?.findWeekByFirstDay(weekBeginDate);
-    notifyListeners();
+    if (schedule case rs.Ok(value: final val)) {
+      week = val.findWeekByFirstDay(weekBeginDate);
+      notifyListeners();
+    }
   }
 }

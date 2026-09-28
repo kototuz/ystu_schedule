@@ -24,4 +24,15 @@ class GroupList {
       _ => throw const FormatException('Failed to parse GroupList'),
     };
   }
+
+  String getGroupNameByIdx(int idx) {
+    var instituteIdx = 0;
+    var grpIdx = 0;
+    while (idx >= grpIdx + items[instituteIdx].groups.length) {
+      grpIdx += items[instituteIdx].groups.length;
+      instituteIdx += 1;
+    }
+
+    return items[instituteIdx].groups[idx - grpIdx];
+  }
 }
