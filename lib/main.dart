@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ystu_schedule/schedule/model.dart';
+import 'package:ystu_schedule/schedule/page.dart';
 import 'package:ystu_schedule/settings/page.dart';
-import 'package:ystu_schedule/week_schedule/model.dart';
-import 'package:ystu_schedule/week_schedule/page.dart';
 
 void main() {
   runApp(const App());
@@ -55,15 +55,15 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late List<Widget> pages;
-  late WeekScheduleModel model;
+  late ScheduleModel model;
 
   var selectedPageIdx = 0;
 
   @override
   void initState() {
     super.initState();
-    model = WeekScheduleModel();
-    pages = [WeekSchedulePage(model), SettingsPage(model)];
+    model = ScheduleModel();
+    pages = [SchedulePage(model), SettingsPage(model)];
   }
 
   @override

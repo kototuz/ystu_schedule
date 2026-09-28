@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:ystu_schedule/week_schedule/model.dart';
+import 'package:ystu_schedule/schedule/model.dart';
 
-class WeekScheduleNavigator extends StatefulWidget {
-  final WeekScheduleModel model;
+class ScheduleNavigator extends StatefulWidget {
+  final ScheduleModel model;
   final double screenWidth;
 
-  const WeekScheduleNavigator(this.model, this.screenWidth, {super.key});
+  const ScheduleNavigator(this.model, this.screenWidth, {super.key});
 
   @override
-  State<WeekScheduleNavigator> createState() => _WeekScheduleNavigatorState();
+  State<ScheduleNavigator> createState() => _ScheduleNavigatorState();
 }
 
-class _WeekScheduleNavigatorState extends State<WeekScheduleNavigator>
+class _ScheduleNavigatorState extends State<ScheduleNavigator>
     with SingleTickerProviderStateMixin {
   static const MIN_SWIPE_DELTA = 100;
 
   var panStartX = 0.0;
   var currX = 0.0;
-  
+
   // 3 weeks to create effect of infinite scrolling
   late List<DateTime> weekBuffer;
 
@@ -125,7 +125,7 @@ class _WeekScheduleNavigatorState extends State<WeekScheduleNavigator>
 }
 
 class WeekCalendar extends StatefulWidget {
-  final WeekScheduleModel model;
+  final ScheduleModel model;
   final double width;
   final DateTime weekBeginDate;
 

@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:ystu_schedule/schedule/model.dart';
 import 'package:ystu_schedule/types/group_schedule.dart';
-import 'package:ystu_schedule/week_schedule/model.dart';
 
 class LessonView extends StatelessWidget {
-  final WeekScheduleModel model;
+  final ScheduleModel model;
 
   const LessonView(this.model, {super.key});
 

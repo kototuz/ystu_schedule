@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:ystu_schedule/types/group_list.dart';
 import 'package:ystu_schedule/types/group_schedule.dart';
 
-class WeekScheduleModel with ChangeNotifier {
+class ScheduleModel with ChangeNotifier {
   late DateTime now;
   late DateTime weekBeginDate;
   late DateTime selectedDayDate;
@@ -17,7 +17,7 @@ class WeekScheduleModel with ChangeNotifier {
   Week? week;
   Day? selectedDay;
 
-  WeekScheduleModel() {
+  ScheduleModel() {
     now = DateTime.now();
     weekBeginDate = now.subtract(Duration(days: now.weekday - 1));
     selectedDayDate = now;

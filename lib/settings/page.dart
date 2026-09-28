@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ystu_schedule/week_schedule/model.dart';
+import 'package:ystu_schedule/schedule/model.dart';
 
 class SettingsPage extends StatefulWidget {
-  final WeekScheduleModel model;
+  final ScheduleModel model;
 
   const SettingsPage(this.model, {super.key});
 
