@@ -130,26 +130,31 @@ class LessonView extends StatelessWidget {
             // }
 
             return RefreshIndicator(
-              onRefresh: () {
-                final messenger = ScaffoldMessenger.of(context);
-                if (model.groupList case rs.Ok(value: final it)) {
-                  return ScheduleModel.downloadGroupSchedule(
-                    it.getGroupNameByIdx(model.selectedGroupIdx),
-                  ).then((schedule) {
-                    if (schedule case rs.Error(message: final msg)) {
-                      messenger.showSnackBar(SnackBar(content: Text(msg)));
-                    } else {
-                      model.setSchedule(schedule);
-                    }
-                  });
-                }
-
-                messenger.showSnackBar(
-                  const SnackBar(content: Text('Список групп не скачен')),
-                );
-
-                return Future.syncValue(null);
-              },
+              onRefresh: () => model.updateGroupSchedule(
+                (err) => ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(err))),
+              ),
+              // () async {
+              //   final messenger = ScaffoldMessenger.of(context);
+              //   if (model.groupList case rs.Ok(value: final it)) {
+              //     return ScheduleModel.downloadGroupSchedule(
+              //       it.getGroupNameByIdx(model.selectedGroupIdx),
+              //     ).then((schedule) {
+              //       if (schedule case rs.Error(message: final msg)) {
+              //         messenger.showSnackBar(SnackBar(content: Text(msg)));
+              //       } else {
+              //         model.setSchedule(schedule);
+              //       }
+              //     });
+              //   }
+              //
+              //   messenger.showSnackBar(
+              //     const SnackBar(content: Text('Список групп не скачен')),
+              //   );
+              //
+              //   return Future.syncValue(null);
+              // },
               child: result,
             );
           },

@@ -16,14 +16,6 @@ class _SettingsGroupState extends State<SettingsGroup> {
   rs.State<GroupList>? oldGroupList;
 
   @override
-  void dispose() {
-    super.dispose();
-    if (widget.model.groupList case rs.Downloading()) {
-      widget.model.groupList = oldGroupList;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: widget.model,
@@ -40,20 +32,12 @@ class _SettingsGroupState extends State<SettingsGroup> {
           child: const Icon(Icons.update, size: 20.0),
           padding: const EdgeInsets.all(10.0),
           shape: const CircleBorder(),
-          onPressed: () {
-            oldGroupList = widget.model.groupList;
-            widget.model.setGroupList(rs.Downloading());
-            ScheduleModel.downloadGroupList().then((groupList) {
-              if (!mounted) return;
-
-              if (groupList case rs.Error(message: final msg)) {
+          onPressed: () async {
+            widget.model.updateGroupList((err) {
+              if (mounted) {
                 ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(SnackBar(content: Text(msg)));
-                widget.model.setGroupList(oldGroupList);
-              } else {
-                widget.model.setGroup(0);
-                widget.model.setGroupList(groupList);
+                ).showSnackBar(SnackBar(content: Text(err)));
               }
             });
           },
