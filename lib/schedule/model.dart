@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ystu_schedule/resource_state.dart' as rs;
 import 'package:ystu_schedule/types/group_list.dart';
 import 'package:ystu_schedule/types/group_schedule.dart';
@@ -13,17 +15,40 @@ class ScheduleModel with ChangeNotifier {
   late DateTime weekBeginDate;
   late DateTime selectedDayDate;
 
-  rs.State<GroupList>? groupList;
+  rs.State<GroupList>? groupList = rs.Downloading();
   var selectedGroupIdx = 0;
 
   rs.State<GroupSchedule>? schedule;
   Week? week;
   Day? selectedDay;
 
+  late SharedPreferences prefs;
+  late File groupListFile;
+
   ScheduleModel() {
     now = DateTime.now();
     weekBeginDate = now.subtract(Duration(days: now.weekday - 1));
     selectedDayDate = now;
+
+    initResources();
+  }
+
+  void initResources() async {
+    final dir = await getApplicationDocumentsDirectory();
+    groupListFile = File('${dir.path}/group_list.json');
+    if (groupListFile.existsSync()) {
+      final content = await groupListFile.readAsString();
+      groupList = rs.Ok(
+        GroupList.fromJson(jsonDecode(content) as Map<String, dynamic>),
+      );
+    } else {
+      groupList = null;
+    }
+
+    prefs = await SharedPreferences.getInstance();
+    selectedGroupIdx = prefs.getInt('group') ?? 0;
+
+    notifyListeners();
   }
 
   static Future<rs.State<GroupSchedule>> downloadGroupSchedule(
@@ -91,7 +116,21 @@ class ScheduleModel with ChangeNotifier {
     weekBeginDate = weekFirstDayDate;
     if (schedule case rs.Ok(value: final val)) {
       week = val.findWeekByFirstDay(weekBeginDate);
-      notifyListeners();
     }
+  }
+
+  void setGroupList(rs.State<GroupList>? newGroupList) {
+    groupList = newGroupList;
+
+    if (groupList case rs.Ok(value: final it)) {
+      groupListFile.writeAsString(jsonEncode(GroupList.toJson(it)));
+    }
+
+    notifyListeners();
+  }
+
+  void setGroup(int idx) {
+    selectedGroupIdx = idx;
+    prefs.setInt('group', selectedGroupIdx);
   }
 }

@@ -25,6 +25,12 @@ class GroupList {
     };
   }
 
+  static Map<String, dynamic> toJson(GroupList gl) {
+    return {
+      'items': gl.items.map((igl) => {'groups': igl.groups}).toList(),
+    };
+  }
+
   String getGroupNameByIdx(int idx) {
     var instituteIdx = 0;
     var grpIdx = 0;
