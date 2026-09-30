@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -24,32 +26,50 @@ class ScheduleModel with ChangeNotifier {
     selectedDayDate = now;
   }
 
-  static Future<rs.State<GroupSchedule>> downloadGroupSchedule(String grpName) {
-    return http
-        .get(Uri.parse('http://192.168.1.51:8000/${grpName}'))
-        .then(
-          (resp) => resp.statusCode == 200
-              ? rs.Ok(
-                  GroupSchedule.fromJson(
-                    jsonDecode(resp.body) as Map<String, dynamic>,
-                  ),
-                )
-              : rs.Error('Не удалось загрузить расписание'),
-        );
+  static Future<rs.State<GroupSchedule>> downloadGroupSchedule(
+    String grpName,
+  ) async {
+    try {
+      final resp = await http
+          .get(Uri.parse('http://192.168.1.51:8000/${grpName}'))
+          .timeout(const Duration(seconds: 5));
+
+      if (resp.statusCode != 200) {
+        return rs.Error('Не удалось загрузить расписание');
+      }
+
+      return rs.Ok(
+        GroupSchedule.fromJson(jsonDecode(resp.body) as Map<String, dynamic>),
+      );
+    } on SocketException {
+      return rs.Error('Не удалось подключиться к серверу');
+    } on TimeoutException {
+      return rs.Error('Сервер не отвечает');
+    } on FormatException {
+      return rs.Error('Неожиданный формат прибывшего расписания');
+    }
   }
 
-  static Future<rs.State<GroupList>> downloadGroupList() {
-    return http
-        .get(Uri.parse('http://192.168.1.51:8000/actual_groups'))
-        .then(
-          (resp) => resp.statusCode == 200
-              ? rs.Ok(
-                  GroupList.fromJson(
-                    jsonDecode(resp.body) as Map<String, dynamic>,
-                  ),
-                )
-              : rs.Error('Не удалось загрузить список групп'),
-        );
+  static Future<rs.State<GroupList>> downloadGroupList() async {
+    try {
+      final resp = await http
+          .get(Uri.parse('http://192.168.1.51:8000/actual_groups'))
+          .timeout(const Duration(seconds: 5));
+
+      if (resp.statusCode != 200) {
+        return rs.Error('Не удалось загрузить список групп');
+      }
+
+      return rs.Ok(
+        GroupList.fromJson(jsonDecode(resp.body) as Map<String, dynamic>),
+      );
+    } on SocketException {
+      return rs.Error('Не удалось подключиться к серверу');
+    } on TimeoutException {
+      return rs.Error('Сервер не отвечает');
+    } on FormatException {
+      return rs.Error('Неожиданный формат прибывшего списка групп');
+    }
   }
 
   void setSchedule(rs.State<GroupSchedule>? newSchedule) {
