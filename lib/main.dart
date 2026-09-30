@@ -1,53 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:ystu_schedule/schedule/model.dart';
 import 'package:ystu_schedule/schedule/page.dart';
+import 'package:ystu_schedule/settings/app_theme_model.dart';
 import 'package:ystu_schedule/settings/page.dart';
 
 void main() {
   runApp(const App());
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
 
   @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  final themeModel = AppThemeModel();
+
+  @override
   Widget build(BuildContext context) {
-    const seedColor = Colors.red;
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
+    return ListenableBuilder(
+      listenable: themeModel,
+      builder: (context, child) {
+        return MaterialApp(
+          title: 'Flutter Demo',
+          debugShowCheckedModeBanner: false,
 
-      theme: ThemeData(
-        fontFamily: 'Lack',
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seedColor,
-          brightness: Brightness.light,
-          surface: Colors.grey[300],
-          surfaceContainerLowest: Colors.grey[400],
-          surfaceContainerLow: Colors.grey[300],
-          surfaceContainer: Colors.grey[200],
-          surfaceContainerHigh: Colors.grey[100],
-          surfaceContainerHighest: Colors.white,
-        ),
-      ),
+          theme: ThemeData(
+            fontFamily: 'Lack',
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: themeModel.color,
+              brightness: Brightness.light,
+              surface: Colors.grey[300],
+              surfaceContainerLowest: Colors.grey[400],
+              surfaceContainerLow: Colors.grey[300],
+              surfaceContainer: Colors.grey[200],
+              surfaceContainerHigh: Colors.grey[100],
+              surfaceContainerHighest: Colors.white,
+            ),
+          ),
 
-      darkTheme: ThemeData(
-        fontFamily: 'Lack',
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seedColor,
-          brightness: Brightness.dark,
-        ), //colorScheme.copyWith(brightness: Brightness.dark),
-      ),
+          darkTheme: ThemeData(
+            fontFamily: 'Lack',
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: themeModel.color,
+              brightness: Brightness.dark,
+            ), //colorScheme.copyWith(brightness: Brightness.dark),
+          ),
 
-      themeMode: ThemeMode.dark,
+          themeMode: themeModel.mode,
 
-      home: const Home(),
+          home: Home(themeModel),
+        );
+      },
     );
   }
 }
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final AppThemeModel themeModel;
+
+  const Home(this.themeModel, {super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -63,7 +77,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     model = ScheduleModel();
-    pages = [SchedulePage(model), SettingsPage(model)];
+    pages = [SchedulePage(model), SettingsPage(model, widget.themeModel)];
   }
 
   @override
