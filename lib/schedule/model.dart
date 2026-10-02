@@ -6,24 +6,35 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ystu_schedule/error.dart';
-import 'package:ystu_schedule/resource_state.dart' as rs;
 import 'package:ystu_schedule/types/group_list.dart';
 import 'package:ystu_schedule/types/group_schedule.dart';
+
+sealed class Resource<T> {}
+
+final class PendingResource<T> extends Resource<T> {}
+
+final class ReadyResource<T> extends Resource<T> {
+  final T value;
+  ReadyResource(this.value);
+}
+
+class AppError implements Exception {
+  final String message;
+  const AppError(this.message);
+}
 
 class ScheduleModel with ChangeNotifier {
   late DateTime now;
   late DateTime weekBeginDate;
   late DateTime selectedDayDate;
 
-  rs.State<GroupList>? groupList = rs.Downloading();
+  Resource<GroupList>? groupList = PendingResource();
   var selectedGroupIdx = 0;
 
-  rs.State<GroupSchedule>? schedule = rs.Downloading();
+  Resource<GroupSchedule>? schedule = PendingResource();
   Week? week;
   Day? selectedDay;
 
-  late SharedPreferences prefs;
   late File groupListFile;
   late File scheduleFile;
 
@@ -41,7 +52,7 @@ class ScheduleModel with ChangeNotifier {
     groupListFile = File('${dir.path}/group_list.json');
     if (groupListFile.existsSync()) {
       final content = await groupListFile.readAsString();
-      groupList = rs.Ok(
+      groupList = ReadyResource(
         GroupList.fromJson(jsonDecode(content) as Map<String, dynamic>),
       );
     } else {
@@ -58,7 +69,7 @@ class ScheduleModel with ChangeNotifier {
       schedule = null;
     }
 
-    prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     selectedGroupIdx = prefs.getInt('group') ?? 0;
 
     notifyListeners();
@@ -66,7 +77,7 @@ class ScheduleModel with ChangeNotifier {
 
   Future<void> updateGroupSchedule(Function(String) onError) async {
     try {
-      if (groupList case rs.Ok(value: final gl)) {
+      if (groupList case ReadyResource(value: final gl)) {
         final groupName = gl.getGroupNameByIdx(selectedGroupIdx);
         final resp = await httpGet('http://192.168.1.51:8000/$groupName');
 
@@ -91,12 +102,12 @@ class ScheduleModel with ChangeNotifier {
   void updateGroupList(Function(String) onError) async {
     final oldGroupList = groupList;
     try {
-      groupList = rs.Downloading();
+      groupList = PendingResource();
       notifyListeners();
 
       final resp = await httpGet('http://192.168.1.51:8000/actual_groups');
 
-      groupList = rs.Ok(
+      groupList = ReadyResource(
         GroupList.fromJson(jsonDecode(resp.body) as Map<String, dynamic>),
       );
 
@@ -134,7 +145,7 @@ class ScheduleModel with ChangeNotifier {
   void setSchedule(GroupSchedule newSchedule) {
     week = newSchedule.findWeekByFirstDay(weekBeginDate);
     selectedDay = week?.findDay(selectedDayDate);
-    schedule = rs.Ok(newSchedule);
+    schedule = ReadyResource(newSchedule);
   }
 
   void setSelectedDay(DateTime day) {
@@ -145,13 +156,15 @@ class ScheduleModel with ChangeNotifier {
 
   void setWeek(DateTime weekFirstDayDate) {
     weekBeginDate = weekFirstDayDate;
-    if (schedule case rs.Ok(value: final val)) {
+    if (schedule case ReadyResource(value: final val)) {
       week = val.findWeekByFirstDay(weekBeginDate);
     }
   }
 
   void setGroup(int idx) {
     selectedGroupIdx = idx;
-    prefs.setInt('group', selectedGroupIdx);
+    SharedPreferences.getInstance().then(
+      (prefs) => prefs.setInt('group', selectedGroupIdx),
+    );
   }
 }

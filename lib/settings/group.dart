@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ystu_schedule/resource_state.dart' as rs;
 import 'package:ystu_schedule/schedule/model.dart';
-import 'package:ystu_schedule/types/group_list.dart';
 
 class SettingsGroup extends StatefulWidget {
   final ScheduleModel model;
@@ -13,8 +11,6 @@ class SettingsGroup extends StatefulWidget {
 }
 
 class _SettingsGroupState extends State<SettingsGroup> {
-  rs.State<GroupList>? oldGroupList;
-
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -47,7 +43,7 @@ class _SettingsGroupState extends State<SettingsGroup> {
           case null:
             groupMenuEnabled = false;
 
-          case rs.Downloading():
+          case PendingResource():
             groupMenuEnabled = false;
             updateButton = const Center(
               child: SizedBox(
@@ -57,7 +53,7 @@ class _SettingsGroupState extends State<SettingsGroup> {
               ),
             );
 
-          case rs.Ok(value: final value):
+          case ReadyResource(value: final value):
             var groupIdx = 0;
             for (final insituteGroupList in value.items) {
               for (final groupName in insituteGroupList.groups) {

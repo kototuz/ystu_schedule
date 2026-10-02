@@ -46,7 +46,7 @@ class _AppState extends State<App> {
             colorScheme: ColorScheme.fromSeed(
               seedColor: themeModel.color,
               brightness: Brightness.dark,
-            ), //colorScheme.copyWith(brightness: Brightness.dark),
+            ),
           ),
 
           themeMode: themeModel.mode,

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:ystu_schedule/resource_state.dart' as rs;
 import 'package:ystu_schedule/schedule/model.dart';
 import 'package:ystu_schedule/types/group_schedule.dart';
 
@@ -22,13 +21,13 @@ class LessonView extends StatelessWidget {
           builder: (context, child) {
             Widget result;
             switch (model.schedule) {
-              case rs.Downloading():
+              case PendingResource():
                 result = const Center(child: CircularProgressIndicator());
 
               case null:
                 result = const Note('Расписание не скачено');
 
-              case rs.Ok():
+              case ReadyResource():
                 if (model.selectedDay == null) {
                   result = const Note('Нет расписания на этот день');
                 } else {
@@ -57,9 +56,6 @@ class LessonView extends StatelessWidget {
                     ),
                   );
                 }
-
-              default:
-                result = const Placeholder();
             }
 
             // Widget result = const Center(child: CircularProgressIndicator());

@@ -30,11 +30,8 @@ class AppThemeModel extends ChangeNotifier {
   Color get color => colors[colorIdx].$1;
   ThemeMode get mode => modes[modeIdx].$1;
 
-  late SharedPreferences prefs;
-
   AppThemeModel() {
-    SharedPreferences.getInstance().then((instance) {
-      prefs = instance;
+    SharedPreferences.getInstance().then((prefs) {
       modeIdx = prefs.getInt('theme_mode') ?? 0;
       colorIdx = prefs.getInt('theme_color') ?? 0;
       notifyListeners();
@@ -43,13 +40,17 @@ class AppThemeModel extends ChangeNotifier {
 
   void setMode(int idx) {
     modeIdx = idx;
-    prefs.setInt('theme_mode', modeIdx);
-    notifyListeners();
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setInt('theme_mode', modeIdx);
+      notifyListeners();
+    });
   }
 
   void setColor(int idx) {
     colorIdx = idx;
-    prefs.setInt('theme_color', colorIdx);
-    notifyListeners();
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setInt('theme_color', colorIdx);
+      notifyListeners();
+    });
   }
 }
