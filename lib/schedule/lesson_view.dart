@@ -126,10 +126,10 @@ class LessonView extends StatelessWidget {
             // }
 
             return RefreshIndicator(
-              onRefresh: () => model.updateGroupSchedule(
+              onRefresh: () => model.updateGroupSchedule().catchError(
                 (err) => ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(SnackBar(content: Text(err))),
+                ).showSnackBar(SnackBar(content: Text(err.message))),
               ),
               // () async {
               //   final messenger = ScaffoldMessenger.of(context);

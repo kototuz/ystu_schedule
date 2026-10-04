@@ -3,6 +3,7 @@ import 'package:ystu_schedule/schedule/model.dart';
 import 'package:ystu_schedule/schedule/page.dart';
 import 'package:ystu_schedule/settings/app_theme_model.dart';
 import 'package:ystu_schedule/settings/page.dart';
+import 'package:ystu_schedule/setup/page.dart';
 
 void main() {
   runApp(const App());
@@ -16,7 +17,15 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final themeModel = AppThemeModel();
+  late AppThemeModel themeModel;
+  late ScheduleModel scheduleModel;
+
+  @override
+  void initState() {
+    super.initState();
+    themeModel = AppThemeModel();
+    scheduleModel = ScheduleModel();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +60,10 @@ class _AppState extends State<App> {
 
           themeMode: themeModel.mode,
 
-          home: Home(themeModel),
+          home: SetupPage(
+            model: scheduleModel,
+            child: Home(scheduleModel, themeModel),
+          ),
         );
       },
     );
@@ -60,8 +72,9 @@ class _AppState extends State<App> {
 
 class Home extends StatefulWidget {
   final AppThemeModel themeModel;
+  final ScheduleModel scheduleModel;
 
-  const Home(this.themeModel, {super.key});
+  const Home(this.scheduleModel, this.themeModel, {super.key});
 
   @override
   State<Home> createState() => _HomeState();
@@ -69,15 +82,16 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late List<Widget> pages;
-  late ScheduleModel model;
 
   var selectedPageIdx = 0;
 
   @override
   void initState() {
     super.initState();
-    model = ScheduleModel();
-    pages = [SchedulePage(model), SettingsPage(model, widget.themeModel)];
+    pages = [
+      SchedulePage(widget.scheduleModel),
+      SettingsPage(widget.scheduleModel, widget.themeModel),
+    ];
   }
 
   @override

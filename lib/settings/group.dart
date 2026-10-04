@@ -29,11 +29,11 @@ class _SettingsGroupState extends State<SettingsGroup> {
           padding: const EdgeInsets.all(10.0),
           shape: const CircleBorder(),
           onPressed: () async {
-            widget.model.updateGroupList((err) {
+            widget.model.updateGroupList().catchError((err) {
               if (mounted) {
                 ScaffoldMessenger.of(
                   context,
-                ).showSnackBar(SnackBar(content: Text(err)));
+                ).showSnackBar(SnackBar(content: Text(err.message)));
               }
             });
           },

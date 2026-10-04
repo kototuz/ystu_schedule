@@ -75,7 +75,7 @@ class ScheduleModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateGroupSchedule(Function(String) onError) async {
+  Future<GroupSchedule> updateGroupSchedule() async {
     try {
       if (groupList case ReadyResource(value: final gl)) {
         final groupName = gl.getGroupNameByIdx(selectedGroupIdx);
@@ -89,17 +89,17 @@ class ScheduleModel with ChangeNotifier {
 
         setSchedule(newSchedule);
         notifyListeners();
+
+        return newSchedule;
       } else {
-        onError('Список групп не скачен');
+        throw const AppError('Список групп не скачен');
       }
-    } on AppError catch (e) {
-      onError(e.message);
     } on FormatException {
-      onError('Неожиданный формат расписания');
+      throw const AppError('Неожиданный формат расписания');
     }
   }
 
-  void updateGroupList(Function(String) onError) async {
+  Future<GroupList> updateGroupList() async {
     final oldGroupList = groupList;
     try {
       groupList = PendingResource();
@@ -107,38 +107,24 @@ class ScheduleModel with ChangeNotifier {
 
       final resp = await httpGet('http://192.168.1.51:8000/actual_groups');
 
-      groupList = ReadyResource(
-        GroupList.fromJson(jsonDecode(resp.body) as Map<String, dynamic>),
+      final newGroupList = GroupList.fromJson(
+        jsonDecode(resp.body) as Map<String, dynamic>,
       );
+
+      groupList = ReadyResource(newGroupList);
 
       selectedGroupIdx = 0;
       groupListFile.writeAsBytes(resp.bodyBytes);
-    } on AppError catch (e) {
+
+      return newGroupList;
+    } on AppError {
       groupList = oldGroupList;
-      onError(e.message);
+      rethrow;
     } on FormatException {
       groupList = oldGroupList;
-      onError('Неожиданный формат списка групп');
+      throw const AppError('Неожиданный формат списка групп');
     } finally {
       notifyListeners();
-    }
-  }
-
-  static Future<http.Response> httpGet(String url) async {
-    try {
-      final resp = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 5));
-
-      if (resp.statusCode != 200) {
-        throw AppError('Сервер ответил с ошибкой ${resp.statusCode}');
-      }
-
-      return resp;
-    } on SocketException {
-      throw const AppError('Не удалось подключиться к серверу');
-    } on TimeoutException {
-      throw const AppError('Сервер не отвечает');
     }
   }
 
@@ -166,5 +152,39 @@ class ScheduleModel with ChangeNotifier {
     SharedPreferences.getInstance().then(
       (prefs) => prefs.setInt('group', selectedGroupIdx),
     );
+  }
+
+  static Future<int> presentFiles() async {
+    final dir = await getApplicationDocumentsDirectory();
+
+    var result = 0;
+
+    if (File('${dir.path}/group_list.json').existsSync()) {
+      result += 1;
+    }
+
+    if (File('${dir.path}/schedule.json').existsSync()) {
+      result += 1;
+    }
+
+    return result;
+  }
+
+  static Future<http.Response> httpGet(String url) async {
+    try {
+      final resp = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 5));
+
+      if (resp.statusCode != 200) {
+        throw AppError('Сервер ответил с ошибкой ${resp.statusCode}');
+      }
+
+      return resp;
+    } on SocketException {
+      throw const AppError('Не удалось подключиться к серверу');
+    } on TimeoutException {
+      throw const AppError('Сервер не отвечает');
+    }
   }
 }

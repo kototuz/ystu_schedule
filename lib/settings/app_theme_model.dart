@@ -24,8 +24,8 @@ class AppThemeModel extends ChangeNotifier {
     (Colors.amber, 'Янтарный'),
   ];
 
-  var modeIdx = 0;
-  var colorIdx = 0;
+  late int modeIdx;
+  late int colorIdx;
 
   Color get color => colors[colorIdx].$1;
   ThemeMode get mode => modes[modeIdx].$1;
@@ -33,7 +33,7 @@ class AppThemeModel extends ChangeNotifier {
   AppThemeModel() {
     SharedPreferences.getInstance().then((prefs) {
       modeIdx = prefs.getInt('theme_mode') ?? 0;
-      colorIdx = prefs.getInt('theme_color') ?? 0;
+      colorIdx = prefs.getInt('theme_color') ?? 10;
       notifyListeners();
     });
   }
