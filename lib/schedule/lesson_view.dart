@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:ystu_schedule/schedule/model.dart';
 import 'package:ystu_schedule/types/group_schedule.dart';
@@ -31,126 +29,39 @@ class LessonView extends StatelessWidget {
                 if (model.selectedDay == null) {
                   result = const Note('Нет расписания на этот день');
                 } else {
-                  // result = Padding(
-                  //   padding: const EdgeInsets.all(10),
-                  //   child: CustomScrollView(
-                  //     slivers: [
-                  //       SliverToBoxAdapter(
-                  //         child: Column(
-                  //           children: [
-                  //             for (final lesson in model.selectedDay!.lessons)
-                  //               LessonCard(lesson),
-                  //           ],
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
+                  var currLessonNum = 1;
+                  final placeholder = LessonCard.placeholder(colorScheme);
+                  final List<Widget> lessons = [];
+                  for (final lesson in model.selectedDay!.lessons) {
+                    while (lesson.number > currLessonNum) {
+                      lessons.add(placeholder);
+                      currLessonNum += 1;
+                    }
+
+                    lessons.add(LessonCard(lesson));
+                    currLessonNum += lesson.duration ~/ 2;
+                  }
+
                   result = Padding(
                     padding: const EdgeInsets.all(8),
                     child: ListView(
                       padding: EdgeInsetsGeometry.zero,
-                      children: [
-                        for (final lesson in model.selectedDay!.lessons)
-                          LessonCard(lesson),
-                      ],
+                      children: lessons,
                     ),
                   );
                 }
             }
 
-            // Widget result = const Center(child: CircularProgressIndicator());
-            // if (model.schedule != null) {
-            //   if (model.selectedDay == null) {
-            //     result = Center(
-            //       child: Text(
-            //         'Нет расписания на этот день',
-            //         style: TextStyle(
-            //           color: colorScheme.onSurface.withAlpha(80),
-            //         ),
-            //       ),
-            //     );
-            //   } else {
-            //     // var lastLessonNum = 1;
-            //     // model.selectedDay!.lessons.forEach((l) {
-            //     //   lastLessonNum = max(lastLessonNum, l.number);
-            //     // });
-            //
-            //     // final placeholder = Row(
-            //     //   children: [
-            //     //     Expanded(
-            //     //       child: Container(
-            //     //         height: 80,
-            //     //         decoration: BoxDecoration(
-            //     //           color: colorScheme.surface,
-            //     //           border: Border.all(
-            //     //             color: colorScheme.onSurface.withAlpha(50),
-            //     //           ),
-            //     //         ),
-            //     //         padding: const EdgeInsets.symmetric(
-            //     //           vertical: 20,
-            //     //           horizontal: 10,
-            //     //         ),
-            //     //         child: Center(
-            //     //           child: Text(
-            //     //             'Окно',
-            //     //             style: TextStyle(
-            //     //               color: colorScheme.onSurface.withAlpha(80),
-            //     //             ),
-            //     //           ),
-            //     //         ),
-            //     //       ),
-            //     //     ),
-            //     //   ],
-            //     // );
-            //
-            //     // final List<Widget> lessonView = List.filled(
-            //     //   lastLessonNum,
-            //     //   placeholder,
-            //     // );
-            //
-            //     // for (final lesson in model.selectedDay!.lessons) {
-            //     //   lessonView[lesson.number - 1] = LessonCard(lesson);
-            //     // }
-            //
-            //     result = Container(
-            //       padding: const EdgeInsets.all(10),
-            //       child: Column(
-            //         spacing: 7,
-            //         children: [
-            //           for (final lesson in model.selectedDay!.lessons)
-            //             LessonCard(lesson),
-            //         ],
-            //       ),
-            //     );
-            //   }
-            // }
-
             return RefreshIndicator(
-              onRefresh: () => model.updateGroupSchedule().catchError(
-                (err) => ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(err.message))),
-              ),
-              // () async {
-              //   final messenger = ScaffoldMessenger.of(context);
-              //   if (model.groupList case rs.Ok(value: final it)) {
-              //     return ScheduleModel.downloadGroupSchedule(
-              //       it.getGroupNameByIdx(model.selectedGroupIdx),
-              //     ).then((schedule) {
-              //       if (schedule case rs.Error(message: final msg)) {
-              //         messenger.showSnackBar(SnackBar(content: Text(msg)));
-              //       } else {
-              //         model.setSchedule(schedule);
-              //       }
-              //     });
-              //   }
-              //
-              //   messenger.showSnackBar(
-              //     const SnackBar(content: Text('Список групп не скачен')),
-              //   );
-              //
-              //   return Future.syncValue(null);
-              // },
+              onRefresh: () async {
+                try {
+                  await model.updateGroupSchedule();
+                } on AppError catch (err) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(err.message)));
+                }
+              },
               child: result,
             );
           },
@@ -187,6 +98,8 @@ class Note extends StatelessWidget {
 }
 
 class LessonCard extends StatelessWidget {
+  static const baseHeight = 80.0;
+
   final Lesson lesson;
 
   const LessonCard(this.lesson, {super.key});
@@ -201,7 +114,7 @@ class LessonCard extends StatelessWidget {
             elevation: 2,
             color: colorScheme.surfaceContainerHigh,
             child: Container(
-              height: 80,
+              height: baseHeight * (lesson.duration ~/ 2),
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               child: Row(
                 children: [
@@ -318,6 +231,34 @@ class LessonCard extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static Widget placeholder(ColorScheme colorScheme) {
+    return Row(
+      children: [
+        Expanded(
+          child: Card(
+            elevation: 0,
+            color: colorScheme.surface,
+            child: Container(
+              height: baseHeight,
+              decoration: BoxDecoration(
+                border: Border.all(color: colorScheme.onSurface.withAlpha(50)),
+                borderRadius: const BorderRadiusGeometry.all(
+                  Radius.circular(15),
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  'Окно',
+                  style: TextStyle(color: colorScheme.onSurface.withAlpha(80)),
+                ),
               ),
             ),
           ),
