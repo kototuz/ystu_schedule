@@ -79,7 +79,13 @@ class ScheduleModel with ChangeNotifier {
     try {
       if (groupList case ReadyResource(value: final gl)) {
         final groupName = gl.getGroupNameByIdx(selectedGroupIdx);
-        final resp = await httpGet('http://192.168.1.51:8000/$groupName');
+
+        const baseUrl = String.fromEnvironment(
+          'BASE_URL',
+          defaultValue: 'http://192.168.1.51:8000',
+        );
+
+        final resp = await httpGet('$baseUrl/group/$groupName');
 
         final newSchedule = GroupSchedule.fromJson(
           jsonDecode(resp.body) as Map<String, dynamic>,
@@ -105,7 +111,13 @@ class ScheduleModel with ChangeNotifier {
       groupList = PendingResource();
       notifyListeners();
 
-      final resp = await httpGet('http://192.168.1.51:8000/actual_groups');
+      const baseUrl = String.fromEnvironment(
+        'BASE_URL',
+        defaultValue: 'http://192.168.1.51:8000',
+      );
+
+      print(baseUrl);
+      final resp = await httpGet('$baseUrl/actual_groups');
 
       final newGroupList = GroupList.fromJson(
         jsonDecode(resp.body) as Map<String, dynamic>,
