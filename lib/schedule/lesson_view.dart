@@ -112,116 +112,65 @@ class LessonCard extends StatelessWidget {
         Expanded(
           child: Card(
             elevation: 2,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadiusGeometry.all(Radius.circular(15)),
+            ),
             color: colorScheme.surfaceContainerHigh,
-            child: Container(
-              height: baseHeight * (lesson.duration ~/ 2),
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-              child: Row(
-                children: [
-                  Container(
-                    width: 60,
-                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        right: BorderSide(color: colorScheme.primary),
+            child: TextButton(
+              onPressed: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (ctx) {
+                    return AdditionalInfoDialogue(lesson);
+                  },
+                );
+              },
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadiusGeometry.all(Radius.circular(15)),
+                ),
+              ),
+              child: Container(
+                height: baseHeight * (lesson.duration ~/ 2),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 10,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 60,
+                      padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right: BorderSide(color: colorScheme.primary),
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${lesson.startAt.hour}:${lesson.startAt.minute.toString().padLeft(2, '0')}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${lesson.endAt.hour}:${lesson.endAt.minute.toString().padLeft(2, '0')}',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: colorScheme.onSurface.withAlpha(90),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                       child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Flexible(
-                                child: Text(
-                                  lesson.lessonName,
-                                  style: const TextStyle(fontSize: 13),
-                                  overflow: TextOverflow.ellipsis,
+                              Text(
+                                '${lesson.startAt.hour}:${lesson.startAt.minute.toString().padLeft(2, '0')}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: colorScheme.onSurface,
                                 ),
                               ),
                             ],
                           ),
-
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Text(
-                                lesson.type.toString(),
+                                '${lesson.endAt.hour}:${lesson.endAt.minute.toString().padLeft(2, '0')}',
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  color: colorScheme.onSurface.withAlpha(130),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const Spacer(),
-
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on,
-                                      size: 15,
-                                      color: colorScheme.onSurface.withAlpha(
-                                        130,
-                                      ),
-                                    ),
-                                    Text(
-                                      lesson.auditoryName,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: colorScheme.onSurface.withAlpha(
-                                          130,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              Icon(
-                                Icons.person,
-                                size: 15,
-                                color: colorScheme.onSurface.withAlpha(130),
-                              ),
-
-                              Text(
-                                lesson.teacherName,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: colorScheme.onSurface.withAlpha(130),
+                                  fontSize: 16,
+                                  color: colorScheme.onSurface.withAlpha(90),
                                 ),
                               ),
                             ],
@@ -229,8 +178,91 @@ class LessonCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    lesson.lessonName,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: colorScheme.onSurface,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            Row(
+                              children: [
+                                Text(
+                                  lesson.type.toString(),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: colorScheme.onSurface.withAlpha(130),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const Spacer(),
+
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    0,
+                                    0,
+                                    10,
+                                    0,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.location_on,
+                                        size: 15,
+                                        color: colorScheme.onSurface.withAlpha(
+                                          130,
+                                        ),
+                                      ),
+                                      Text(
+                                        lesson.auditoryName,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: colorScheme.onSurface
+                                              .withAlpha(130),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Icon(
+                                  Icons.person,
+                                  size: 15,
+                                  color: colorScheme.onSurface.withAlpha(130),
+                                ),
+
+                                Text(
+                                  lesson.teacherName,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: colorScheme.onSurface.withAlpha(130),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -264,6 +296,84 @@ class LessonCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class AdditionalInfoDialogue extends StatelessWidget {
+  const AdditionalInfoDialogue(this.lesson, {super.key});
+
+  final Lesson lesson;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    final textInfo = [
+      ('Название: ', lesson.lessonName),
+      ('Длительность: ', '${lesson.duration}ч'),
+    ];
+
+    final boolInfo =
+        [
+              ('В потоке', lesson.isStream),
+              ('По подгруппам', lesson.isDivision),
+              ('Сокращённая', lesson.isShort),
+              ('Дистант', lesson.isDistant),
+              ('На нечётной', lesson.parity == 1),
+              ('На чётной', lesson.parity == 2),
+            ]
+            .where((inf) => inf.$2)
+            .map(
+              (inf) => Chip(
+                label: Text(
+                  inf.$1,
+                  style: TextStyle(color: colorScheme.onPrimary),
+                ),
+                backgroundColor: colorScheme.primary,
+                padding: const EdgeInsets.all(2),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                // ma,
+              ),
+            );
+
+    final textStyle = DefaultTextStyle.of(context).style;
+    return AlertDialog(
+      title: const Text(
+        'Доп. Информация',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+      ),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: [
+            for (final field in textInfo)
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: field.$1,
+                      style: textStyle.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withAlpha(100),
+                      ),
+                    ),
+                    TextSpan(text: field.$2, style: textStyle),
+                  ],
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Wrap(
+                alignment: WrapAlignment.start,
+                spacing: 2,
+                runSpacing: 2,
+                children: boolInfo.toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
