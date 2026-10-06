@@ -116,7 +116,6 @@ class ScheduleModel with ChangeNotifier {
         defaultValue: 'http://192.168.1.51:8000',
       );
 
-      print(baseUrl);
       final resp = await httpGet('$baseUrl/actual_groups');
 
       final newGroupList = GroupList.fromJson(

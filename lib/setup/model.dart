@@ -42,7 +42,6 @@ class SetupModel extends ChangeNotifier {
   void startOrContinue() async {
     loop:
     while (true) {
-      // print(stage);
       switch (stage) {
         case 0:
           state = SetupStateDownloading();
