@@ -312,6 +312,7 @@ class AdditionalInfoDialogue extends StatelessWidget {
     final textInfo = [
       ('Название: ', lesson.lessonName),
       ('Длительность: ', '${lesson.duration}ч'),
+      if (lesson.subInfo != null) ('Комментарий: ', lesson.subInfo),
     ];
 
     final boolInfo =

@@ -5,7 +5,77 @@ class WeekDay {
   const WeekDay(this.type, this.date, this.weekNumber);
 }
 
-class LessonType {
+class Lesson {
+  final int number;
+  final DateTime startAt;
+  final DateTime endAt;
+  final int parity;
+  final bool isDistant;
+  final String lessonName;
+  final String? subInfo;
+  final String type;
+  final bool isStream;
+  final int duration;
+  final bool isDivision;
+  final bool isShort;
+  final bool isLecture;
+  final String auditoryName;
+  final String teacherName;
+
+  const Lesson({
+    required this.number,
+    required this.startAt,
+    required this.endAt,
+    required this.parity,
+    required this.isDistant,
+    required this.lessonName,
+    required this.subInfo,
+    required this.type,
+    required this.isStream,
+    required this.duration,
+    required this.isDivision,
+    required this.isShort,
+    required this.isLecture,
+    required this.auditoryName,
+    required this.teacherName,
+  });
+
+  factory Lesson.fromJson(Map<String, dynamic> json, int index) {
+    switch (json) {
+      case {
+        'startAt': final String startAt,
+        'endAt': final String endAt,
+        'type': final int type,
+        'isStream': final bool isStream,
+        'isDivision': final bool isDivision,
+      }:
+        final subInfo = json['subInfo'];
+        return Lesson(
+          number: json['number'] ?? index + 1,
+          subInfo: subInfo,
+          lessonName: json['lessonName'] ?? subInfo ?? '???',
+          type: typeToString(type) ?? subInfo ?? '???',
+
+          startAt: DateTime.parse(startAt).toLocal(),
+          endAt: DateTime.parse(endAt).toLocal(),
+
+          parity: json['parity'] ?? 0,
+          duration: json['duration'] ?? 2,
+          auditoryName: json['auditoryName'] ?? '???',
+          teacherName: json['teacherName'] ?? '???',
+
+          isDistant: json['isDistant'] ?? false,
+          isStream: isStream,
+          isDivision: isDivision,
+          isShort: json['isShort'] ?? false,
+          isLecture: json['isLecture'] ?? false,
+        );
+
+      default:
+        throw const FormatException('Failed to parse Lesson');
+    }
+  }
+
   static final LESSON_TYPE_NAMES = [
     (0, '???'),
     (1 << 1, 'Лекция'),
@@ -30,47 +100,15 @@ class LessonType {
     (1 << 21, 'Школа 21'),
   ];
 
-  final int flags;
-  const LessonType(this.flags);
+  static String? typeToString(int type) {
+    for (final lessonType in LESSON_TYPE_NAMES) {
+      if (type == lessonType.$1) {
+        return lessonType.$2;
+      }
+    }
 
-  @override
-  String toString() {
-    return LESSON_TYPE_NAMES.firstWhere((t) => t.$1 == flags).$2;
+    return null;
   }
-}
-
-class Lesson {
-  final int number;
-  final DateTime startAt;
-  final DateTime endAt;
-  final int parity;
-  final bool isDistant;
-  final String lessonName;
-  final LessonType type;
-  final bool isStream;
-  final int duration;
-  final bool isDivision;
-  final bool isShort;
-  final bool isLecture;
-  final String auditoryName;
-  final String teacherName;
-
-  const Lesson(
-    this.number,
-    this.startAt,
-    this.endAt,
-    this.parity,
-    this.isDistant,
-    this.lessonName,
-    this.type,
-    this.isStream,
-    this.duration,
-    this.isDivision,
-    this.isShort,
-    this.isLecture,
-    this.auditoryName,
-    this.teacherName,
-  );
 }
 
 class Day {
@@ -148,39 +186,11 @@ class GroupSchedule {
                             'Failed to parse WeekDay',
                           ),
                         },
-                        lessons.asMap().entries.map((e) {
-                          final lesson = e.value;
-                          return switch (lesson) {
-                            {
-                              'startAt': final String startAt,
-                              'endAt': final String endAt,
-                              'type': final int type,
-                              'isStream': final bool isStream,
-                              'isDivision': final bool isDivision,
-                            } =>
-                              Lesson(
-                                lesson['number'] ?? e.key + 1,
-                                DateTime.parse(startAt).toLocal(),
-                                DateTime.parse(endAt).toLocal(),
-                                lesson['parity'] ?? 0,
-                                lesson['isDistant'] ?? false,
-                                lesson['lessonName'] ??
-                                    lesson['subInfo'] ??
-                                    '???',
-                                LessonType(type),
-                                isStream,
-                                lesson['duration'] ?? 0,
-                                isDivision,
-                                lesson['isShort'] ?? false,
-                                lesson['isLecture'] ?? false,
-                                lesson['auditoryName'] ?? '???',
-                                lesson['teacherName'] ?? '???',
-                              ),
-                            _ => throw const FormatException(
-                              'Failed to parse Lesson',
-                            ),
-                          };
-                        }).toList(),
+                        lessons
+                            .asMap()
+                            .entries
+                            .map((e) => Lesson.fromJson(e.value, e.key))
+                            .toList(),
                       ),
 
                     _ => throw const FormatException('Failed to parse Day'),
