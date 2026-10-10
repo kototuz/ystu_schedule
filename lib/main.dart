@@ -33,7 +33,7 @@ class _AppState extends State<App> {
       listenable: themeModel,
       builder: (context, child) {
         return MaterialApp(
-          title: 'Flutter Demo',
+          title: 'ЯГТУ Расписание',
           debugShowCheckedModeBanner: false,
 
           theme: ThemeData(
@@ -82,12 +82,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late List<Widget> pages;
+  late PageController pageViewController;
 
-  var selectedPageIdx = 0;
+  var selectedPageIdx = ValueNotifier(0);
 
   @override
   void initState() {
     super.initState();
+    pageViewController = PageController();
     pages = [
       SchedulePage(widget.scheduleModel),
       SettingsPage(widget.scheduleModel, widget.themeModel),
@@ -95,19 +97,44 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    pageViewController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: pages[selectedPageIdx],
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
-        ],
-        currentIndex: selectedPageIdx,
-        onTap: (index) => setState(() => selectedPageIdx = index),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      body: PageView(
+        controller: pageViewController,
+        children: pages,
+        physics: const NeverScrollableScrollPhysics(),
+      ),
+      bottomNavigationBar: ListenableBuilder(
+        listenable: selectedPageIdx,
+        builder: (context, child) => BottomNavigationBar(
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: '',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
+          ],
+          currentIndex: selectedPageIdx.value,
+          onTap: (pageIdx) {
+            selectedPageIdx.value = pageIdx;
+            pageViewController.animateToPage(
+              pageIdx,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          },
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.surfaceContainerHighest,
+        ),
       ),
     );
   }
