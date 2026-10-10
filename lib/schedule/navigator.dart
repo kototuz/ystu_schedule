@@ -14,6 +14,7 @@ class ScheduleNavigator extends StatefulWidget {
 class _ScheduleNavigatorState extends State<ScheduleNavigator>
     with SingleTickerProviderStateMixin {
   static const MIN_SWIPE_DELTA = 90;
+  static const NAVIGATOR_HEIGHT = 130.0;
 
   var panStartX = 0.0;
   var currX = 0.0;
@@ -72,7 +73,7 @@ class _ScheduleNavigatorState extends State<ScheduleNavigator>
   Widget build(BuildContext context) {
     return Container(
       width: widget.screenWidth,
-      height: 130,
+      height: NAVIGATOR_HEIGHT,
       child: Stack(
         children: [
           Positioned(
@@ -203,6 +204,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
       padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
       color: colorScheme.primary,
       width: widget.width,
+      height: _ScheduleNavigatorState.NAVIGATOR_HEIGHT,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         spacing: 5,
@@ -217,7 +219,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          Row(children: weekdays),
+          Expanded(child: Row(children: weekdays)),
         ],
       ),
     );

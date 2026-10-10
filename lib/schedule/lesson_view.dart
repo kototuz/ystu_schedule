@@ -43,9 +43,9 @@ class LessonView extends StatelessWidget {
                   }
 
                   result = Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: ListView(
-                      padding: EdgeInsetsGeometry.zero,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       children: lessons,
                     ),
                   );

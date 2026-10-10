@@ -112,28 +112,40 @@ class _HomeState extends State<Home> {
       ),
       bottomNavigationBar: ListenableBuilder(
         listenable: selectedPageIdx,
-        builder: (context, child) => BottomNavigationBar(
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_today),
-              label: '',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
-          ],
-          currentIndex: selectedPageIdx.value,
-          onTap: (pageIdx) {
-            selectedPageIdx.value = pageIdx;
-            pageViewController.animateToPage(
-              pageIdx,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            );
-          },
-          backgroundColor: Theme.of(
-            context,
-          ).colorScheme.surfaceContainerHighest,
+        builder: (context, child) => DecoratedBox(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.shadow.withAlpha(40),
+                offset: const Offset(0, -1),
+                spreadRadius: 1,
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: BottomNavigationBar(
+            showSelectedLabels: false,
+            showUnselectedLabels: false,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_today),
+                label: '',
+              ),
+              BottomNavigationBarItem(icon: Icon(Icons.settings), label: ''),
+            ],
+            currentIndex: selectedPageIdx.value,
+            onTap: (pageIdx) {
+              selectedPageIdx.value = pageIdx;
+              pageViewController.animateToPage(
+                pageIdx,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            },
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.surfaceContainerHighest,
+          ),
         ),
       ),
     );
