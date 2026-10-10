@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ystu_schedule/schedule/model.dart';
+import 'package:ystu_schedule/utils/date.dart';
 
 class ScheduleNavigator extends StatefulWidget {
   final ScheduleModel model;
@@ -153,11 +154,6 @@ class _WeekCalendarState extends State<WeekCalendar> {
     'Декабрь',
   ];
 
-  // NOTE: Compares only year, month and day
-  bool dateEquals(DateTime d1, DateTime d2) {
-    return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -183,7 +179,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
             onPressed: () => setState(() => widget.model.setSelectedDay(date)),
             child: Container(
               foregroundDecoration: BoxDecoration(
-                border: dateEquals(date, widget.model.now)
+                border: date.equalsYMD(widget.model.now)
                     ? Border(top: BorderSide(width: 1.5, color: fgColor))
                     : null,
               ),

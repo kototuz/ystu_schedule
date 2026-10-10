@@ -1,3 +1,5 @@
+import 'package:ystu_schedule/utils/date.dart';
+
 class WeekDay {
   final int type;
   final DateTime date;
@@ -113,8 +115,23 @@ class Lesson {
 
 class Day {
   final WeekDay info;
-  final List<Lesson> lessons;
-  const Day(this.info, this.lessons);
+  final List<List<Lesson>> lessons = [];
+
+  Day(this.info, List<Lesson> items) {
+    if (items.length == 0) return;
+
+    var currLesson = [items[0]];
+    for (final l in items.skip(1)) {
+      if (l.startAt.equalsHM(currLesson[0].startAt)) {
+        currLesson.add(l);
+      } else {
+        lessons.add(currLesson);
+        currLesson = [l];
+      }
+    }
+
+    lessons.add(currLesson);
+  }
 }
 
 class Week {

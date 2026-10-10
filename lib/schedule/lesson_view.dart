@@ -32,20 +32,27 @@ class LessonView extends StatelessWidget {
                   var currLessonNum = 1;
                   final placeholder = LessonCard.placeholder(colorScheme);
                   final List<Widget> lessons = [];
-                  for (final lesson in model.selectedDay!.lessons) {
-                    while (lesson.number > currLessonNum) {
+                  for (final lessonVariants in model.selectedDay!.lessons) {
+                    while (lessonVariants[0].number > currLessonNum) {
                       lessons.add(placeholder);
                       currLessonNum += 1;
                     }
 
-                    lessons.add(LessonCard(lesson));
-                    currLessonNum += lesson.duration ~/ 2;
+                    lessons.add(
+                      LessonCard(
+                        lessonVariants,
+                        key: Key(
+                          '${model.selectedDayDate.weekday}${lessonVariants[0].number}',
+                        ),
+                      ),
+                    );
+                    currLessonNum += lessonVariants[0].duration ~/ 2;
                   }
 
                   result = Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: ListView(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.fromLTRB(0, 5, 0, 15),
                       children: lessons,
                     ),
                   );
@@ -97,141 +104,256 @@ class Note extends StatelessWidget {
   }
 }
 
-class LessonCard extends StatelessWidget {
+class LessonCard extends StatefulWidget {
+  const LessonCard(this.lessonVariants, {super.key});
+
   static const baseHeight = 80.0;
+  final List<Lesson> lessonVariants;
 
-  final Lesson lesson;
+  @override
+  State<LessonCard> createState() => _LessonCardState();
 
-  const LessonCard(this.lesson, {super.key});
+  static Widget placeholder(ColorScheme colorScheme) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Card(
+              elevation: 0,
+              margin: EdgeInsets.zero,
+              color: colorScheme.surface,
+              child: Container(
+                height: baseHeight,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: colorScheme.onSurface.withAlpha(50),
+                  ),
+                  borderRadius: const BorderRadiusGeometry.all(
+                    Radius.circular(15),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'Окно',
+                    style: TextStyle(
+                      color: colorScheme.onSurface.withAlpha(80),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LessonCardState extends State<LessonCard> {
+  late int selectedVariantIdx;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedVariantIdx = 1;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    selectedVariantIdx = 1;
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Row(
-      children: [
-        Expanded(
-          child: Card(
-            elevation: 2,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadiusGeometry.all(Radius.circular(15)),
-            ),
-            color: colorScheme.surfaceContainerHigh,
-            child: TextButton(
-              onPressed: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (ctx) {
-                    return AdditionalInfoDialogue(lesson);
-                  },
-                );
-              },
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadiusGeometry.all(Radius.circular(15)),
-                ),
-              ),
-              child: Container(
-                height: baseHeight * (lesson.duration ~/ 2),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 10,
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 60,
-                      padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          right: BorderSide(color: colorScheme.primary),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                '${lesson.startAt.hour}:${lesson.startAt.minute.toString().padLeft(2, '0')}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: colorScheme.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                '${lesson.endAt.hour}:${lesson.endAt.minute.toString().padLeft(2, '0')}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: colorScheme.onSurface.withAlpha(90),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+    final variant = widget.lessonVariants[selectedVariantIdx - 1];
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Column(
+        children: [
+          if (widget.lessonVariants.length > 1)
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: SegmentedButton(
+                  style: SegmentedButton.styleFrom(
+                    backgroundColor: colorScheme.surfaceContainerHigh,
+                    side: BorderSide(
+                      color: colorScheme.onSurface.withAlpha(30),
+                    ),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadiusGeometry.all(
+                        Radius.circular(15),
                       ),
                     ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        child: Column(
-                          children: [
-                            Row(
+                  ),
+                  segments: [
+                    for (var i = 1; i < widget.lessonVariants.length + 1; i++)
+                      ButtonSegment(value: i, label: Text(i.toString())),
+                  ],
+                  showSelectedIcon: false,
+                  selected: {selectedVariantIdx},
+                  onSelectionChanged: (sel) {
+                    setState(() {
+                      selectedVariantIdx = sel.first;
+                    });
+                  },
+                ),
+              ),
+            ),
+          Row(
+            children: [
+              Expanded(
+                child: Card(
+                  elevation: 2,
+                  margin: EdgeInsets.zero,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadiusGeometry.all(Radius.circular(15)),
+                  ),
+                  color: colorScheme.surfaceContainerHigh,
+                  child: TextButton(
+                    onPressed: () {
+                      showDialog<void>(
+                        context: context,
+                        builder: (ctx) {
+                          return AdditionalInfoDialogue(variant);
+                        },
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.all(
+                          Radius.circular(15),
+                        ),
+                      ),
+                    ),
+                    child: Container(
+                      height: LessonCard.baseHeight * (variant.duration ~/ 2),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 10,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 60,
+                            padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                right: BorderSide(color: colorScheme.primary),
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Flexible(
-                                  child: Text(
-                                    lesson.lessonName,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: colorScheme.onSurface,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      '${variant.startAt.hour}:${variant.startAt.minute.toString().padLeft(2, '0')}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: colorScheme.onSurface,
+                                      ),
                                     ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      '${variant.endAt.hour}:${variant.endAt.minute.toString().padLeft(2, '0')}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: colorScheme.onSurface.withAlpha(
+                                          90,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-
-                            Row(
-                              children: [
-                                Text(
-                                  lesson.type.toString(),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: colorScheme.onSurface.withAlpha(130),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const Spacer(),
-
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    0,
-                                    0,
-                                    10,
-                                    0,
-                                  ),
-                                  child: Row(
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                              child: Column(
+                                children: [
+                                  Row(
                                     children: [
+                                      Flexible(
+                                        child: Text(
+                                          variant.lessonName,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: colorScheme.onSurface,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  Row(
+                                    children: [
+                                      Text(
+                                        variant.type.toString(),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: colorScheme.onSurface
+                                              .withAlpha(130),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const Spacer(),
+
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.fromLTRB(
+                                          0,
+                                          0,
+                                          10,
+                                          0,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.location_on,
+                                              size: 15,
+                                              color: colorScheme.onSurface
+                                                  .withAlpha(130),
+                                            ),
+                                            Text(
+                                              variant.auditoryName,
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: colorScheme.onSurface
+                                                    .withAlpha(130),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
                                       Icon(
-                                        Icons.location_on,
+                                        Icons.person,
                                         size: 15,
                                         color: colorScheme.onSurface.withAlpha(
                                           130,
                                         ),
                                       ),
+
                                       Text(
-                                        lesson.auditoryName,
+                                        variant.teacherName,
                                         style: TextStyle(
                                           fontSize: 11,
                                           color: colorScheme.onSurface
@@ -240,62 +362,20 @@ class LessonCard extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                ),
-
-                                Icon(
-                                  Icons.person,
-                                  size: 15,
-                                  color: colorScheme.onSurface.withAlpha(130),
-                                ),
-
-                                Text(
-                                  lesson.teacherName,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: colorScheme.onSurface.withAlpha(130),
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ),
-      ],
-    );
-  }
-
-  static Widget placeholder(ColorScheme colorScheme) {
-    return Row(
-      children: [
-        Expanded(
-          child: Card(
-            elevation: 0,
-            color: colorScheme.surface,
-            child: Container(
-              height: baseHeight,
-              decoration: BoxDecoration(
-                border: Border.all(color: colorScheme.onSurface.withAlpha(50)),
-                borderRadius: const BorderRadiusGeometry.all(
-                  Radius.circular(15),
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  'Окно',
-                  style: TextStyle(color: colorScheme.onSurface.withAlpha(80)),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
