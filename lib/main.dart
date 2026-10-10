@@ -116,7 +116,7 @@ class _HomeState extends State<Home> {
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).colorScheme.shadow.withAlpha(40),
+                color: Theme.of(context).colorScheme.shadow.withAlpha(20),
                 offset: const Offset(0, -1),
                 spreadRadius: 1,
                 blurRadius: 5,

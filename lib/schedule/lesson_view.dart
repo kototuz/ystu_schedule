@@ -407,12 +407,13 @@ class AdditionalInfoDialogue extends StatelessWidget {
             .where((inf) => inf.$2)
             .map(
               (inf) => Chip(
+                side: const BorderSide(color: Colors.transparent),
                 label: Text(
                   inf.$1,
                   style: TextStyle(color: colorScheme.onPrimary),
                 ),
                 backgroundColor: colorScheme.primary,
-                padding: const EdgeInsets.all(2),
+                padding: const EdgeInsets.all(1),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 // ma,
               ),
@@ -447,8 +448,8 @@ class AdditionalInfoDialogue extends StatelessWidget {
               padding: const EdgeInsets.only(top: 10),
               child: Wrap(
                 alignment: WrapAlignment.start,
-                spacing: 2,
-                runSpacing: 2,
+                spacing: 3,
+                runSpacing: 3,
                 children: boolInfo.toList(),
               ),
             ),
