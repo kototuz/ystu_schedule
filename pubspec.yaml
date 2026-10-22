@@ -18,6 +18,11 @@ dependencies:
 flutter:
   uses-material-design: true
 
+  assets:
+    - images/guide0.png
+    - images/guide1.png
+    - images/guide2.png
+
   fonts:
     - family: Lack
       fonts:

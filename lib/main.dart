@@ -139,7 +139,7 @@ class _HomeState extends State<Home> {
               pageViewController.animateToPage(
                 pageIdx,
                 duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
+                curve: Curves.easeOutQuad,
               );
             },
             backgroundColor: Theme.of(

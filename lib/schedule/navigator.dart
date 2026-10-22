@@ -172,7 +172,14 @@ class _WeekCalendarState extends State<WeekCalendar> {
             style: TextButton.styleFrom(
               minimumSize: Size.zero,
               padding: const EdgeInsets.all(10.0),
-              shape: const RoundedRectangleBorder(),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusGeometry.only(
+                  topLeft: i > 0 ? const Radius.circular(15) : Radius.zero,
+                  topRight: i < WEEK_NAMES.length - 1
+                      ? const Radius.circular(15)
+                      : Radius.zero,
+                ),
+              ),
               backgroundColor: bgColor,
               splashFactory: NoSplash.splashFactory,
             ),

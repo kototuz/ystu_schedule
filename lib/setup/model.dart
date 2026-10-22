@@ -6,6 +6,10 @@ sealed class SetupState {}
 
 final class SetupStateDownloading extends SetupState {}
 
+final class SetupStateGuide extends SetupState {}
+
+final class SetupStateDone extends SetupState {}
+
 final class SetupStateSelectingGroup extends SetupState {
   final List<({int idx, String name})> groups;
 
@@ -23,8 +27,6 @@ final class SetupStateSelectingGroup extends SetupState {
     return SetupStateSelectingGroup(items);
   }
 }
-
-final class SetupStateDone extends SetupState {}
 
 final class SetupStateError extends SetupState {
   final String message;
@@ -65,7 +67,7 @@ class SetupModel extends ChangeNotifier {
             state = SetupStateDownloading();
             notifyListeners();
             await model.updateGroupSchedule();
-            stage = 3;
+            stage = 4;
           } on AppError catch (e) {
             state = SetupStateError(e.message);
             notifyListeners();
@@ -74,6 +76,11 @@ class SetupModel extends ChangeNotifier {
 
         case 3:
           state = SetupStateDone();
+          notifyListeners();
+          break loop;
+
+        case 4:
+          state = SetupStateGuide();
           notifyListeners();
           break loop;
       }
@@ -91,6 +98,11 @@ class SetupModel extends ChangeNotifier {
   void selectGroup(int idx) {
     model.setGroup(idx);
     stage = 2;
+    startOrContinue();
+  }
+
+  void finishSetup() {
+    stage = 3;
     startOrContinue();
   }
 }

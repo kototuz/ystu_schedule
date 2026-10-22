@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ystu_schedule/schedule/model.dart';
+import 'package:ystu_schedule/setup/guide.dart';
 import 'package:ystu_schedule/setup/model.dart';
 
 class SetupPage extends StatefulWidget {
@@ -13,22 +14,22 @@ class SetupPage extends StatefulWidget {
 }
 
 class _SetupPageState extends State<SetupPage> {
-  late SetupModel guideModel;
+  late SetupModel setupModel;
 
   @override
   void initState() {
     super.initState();
-    guideModel = SetupModel(widget.model);
-    guideModel.startOrContinue();
+    setupModel = SetupModel(widget.model);
+    setupModel.startOrContinue();
   }
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: guideModel,
+      listenable: setupModel,
       builder: (context, child) {
         final colorScheme = Theme.of(context).colorScheme;
-        switch (guideModel.state) {
+        switch (setupModel.state) {
           case SetupStateDownloading():
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
@@ -51,7 +52,7 @@ class _SetupPageState extends State<SetupPage> {
                         ),
                         child: const Text('Повторить'),
                         onPressed: () {
-                          guideModel.retry();
+                          setupModel.retry();
                         },
                       ),
                     ],
@@ -73,7 +74,7 @@ class _SetupPageState extends State<SetupPage> {
                           backgroundColor: colorScheme.surfaceContainer,
                         ),
                         onPressed: () {
-                          guideModel.selectGroup(group.idx);
+                          setupModel.selectGroup(group.idx);
                         },
                         child: Text(
                           group.name,
@@ -90,6 +91,9 @@ class _SetupPageState extends State<SetupPage> {
 
           case SetupStateDone():
             return widget.child;
+
+          case SetupStateGuide():
+            return Guide(setupModel);
         }
       },
     );
