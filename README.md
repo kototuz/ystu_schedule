@@ -1,17 +1,29 @@
-# ystu_schedule
+# ЯГТУ Расписание
 
-A new Flutter project.
+Мобильное приложение (в данный момент работающее только на Android) для студентов
+ЯГТУ, в котором вы можете узнать ваше расписание.
 
-## Getting Started
+<p align=center>
+  <img src="preview/light.png" height="600" />
+  <img src="preview/dark.png" height="600" />
+</p>
 
-This project is a starting point for a Flutter application.
+## Разработка
 
-A few resources to get you started if this is your first Flutter project:
+Чтобы собрать необходимо иметь [Flutter](https://flutter.dev/):
+```console
+$ flutter run         # в разработке
+$ ./build_release.sh  # чтобы собрать release-версию
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Заметки
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Проект использует API [YSTUty](https://github.com/YSTUty/) для получения списка групп и расписания
+группы в JSON-формате. Несмотря на то, что ребята из YSTUty разрабатывают web-приложение
+и telegram-бота, мобильный опыт использования их продуктов всё равно оставляет желать
+лучшего. Учитывая преобладание мобильной аудитории, это превращается в разочарование.
+Сама инициатива крутая, но выбор платформ плохой. Я могу объяснить такое решение только тем,
+что публикация приложений в PlayStore и AppStore достаточно затруднительна. Для обеих платформ
+необходимо плататить за аккаунт разработчика, а выпустить ios-приложение вообще можно
+только из под MacOS. Android спасает только возможность установки откуда угодно, но это может
+оказаться сложным для неопытного человека.
