@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ystu_schedule/setup/model.dart';
 
 class Guide extends StatelessWidget {
-  static const guideCount = 3;
+  static const guideCount = 4;
 
   final SetupModel setupModel;
 
@@ -23,14 +23,7 @@ class Guide extends StatelessWidget {
           child: Column(
             spacing: 10,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: colorScheme.onSurface, width: 2),
-                ),
-                width: image.width,
-                height: image.height,
-                child: image,
-              ),
+              image,
               Row(
                 children: [
                   Expanded(

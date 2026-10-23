@@ -23,6 +23,7 @@ flutter:
     - images/guide0.png
     - images/guide1.png
     - images/guide2.png
+    - images/guide3.png
 
   fonts:
     - family: Lack
