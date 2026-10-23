@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:ystu_schedule/schedule/model.dart';
 import 'package:ystu_schedule/settings/app_theme_model.dart';
 import 'package:ystu_schedule/settings/group.dart';
@@ -11,6 +12,7 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 120, 20, 20),
       child: Column(
@@ -59,6 +61,35 @@ class SettingsPage extends StatelessWidget {
             onSelected: (value) {
               themeModel.setColor(value!);
             },
+          ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            spacing: 10,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  borderRadius: const BorderRadiusGeometry.all(
+                    Radius.circular(3),
+                  ),
+                ),
+                padding: const EdgeInsets.all(5),
+                child: Text(
+                  const String.fromEnvironment('VERSION_TAG', defaultValue: 'debug'),
+                  style: TextStyle(color: colorScheme.onPrimary, fontSize: 16),
+                ),
+              ),
+              ElevatedButton(
+                child: const Text('Посмотреть обновления'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.surfaceContainerHighest,
+                ),
+                onPressed: () {
+                  launchUrl(Uri.parse('https://github.com/kototuz/ystu_schedule/releases/latest'), mode: LaunchMode.externalApplication);
+                },
+              ),
+            ],
           ),
         ],
       ),

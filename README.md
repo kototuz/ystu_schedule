@@ -12,8 +12,8 @@
 
 Чтобы собрать необходимо иметь [Flutter](https://flutter.dev/):
 ```console
-$ flutter run         # в разработке
-$ ./build_release.sh  # чтобы собрать release-версию
+$ flutter run         # запустить в режиме отладки
+$ ./build_release.sh  # собрать release-версию
 ```
 
 ## Заметки

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -24,6 +25,10 @@ class AppError implements Exception {
 }
 
 class ScheduleModel with ChangeNotifier {
+  static const API_BASE_URL = kReleaseMode
+      ? 'https://gg-api.ystuty.ru/s/schedule/v1/schedule'
+      : 'http://192.168.1.51:8000';
+
   late DateTime now;
   late DateTime weekBeginDate;
   late DateTime selectedDayDate;
@@ -80,12 +85,7 @@ class ScheduleModel with ChangeNotifier {
       if (groupList case ReadyResource(value: final gl)) {
         final groupName = gl.getGroupNameByIdx(selectedGroupIdx);
 
-        const baseUrl = String.fromEnvironment(
-          'BASE_URL',
-          defaultValue: 'http://192.168.1.51:8000',
-        );
-
-        final resp = await httpGet('$baseUrl/group/$groupName');
+        final resp = await httpGet('$API_BASE_URL/group/$groupName');
 
         final newSchedule = GroupSchedule.fromJson(
           jsonDecode(resp.body) as Map<String, dynamic>,
@@ -111,12 +111,7 @@ class ScheduleModel with ChangeNotifier {
       groupList = PendingResource();
       notifyListeners();
 
-      const baseUrl = String.fromEnvironment(
-        'BASE_URL',
-        defaultValue: 'http://192.168.1.51:8000',
-      );
-
-      final resp = await httpGet('$baseUrl/actual_groups');
+      final resp = await httpGet('$API_BASE_URL/actual_groups');
 
       final newGroupList = GroupList.fromJson(
         jsonDecode(resp.body) as Map<String, dynamic>,
